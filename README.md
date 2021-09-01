@@ -1,8 +1,6 @@
-# Fabric Example Mod
+# Simple Graves Mod
 
-## Setup
-
-For setup instructions please see the [fabric wiki page](https://fabricmc.net/wiki/tutorial:setup) that relates to the IDE that you are using.
+Adds graves that spawn when you die. They store your items upon death.
 
 ## License
 
