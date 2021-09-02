@@ -6,7 +6,7 @@ Adds graves that spawn when you die. They store your items upon death.
 
 ## To-do:
 - Add nametags above the graves
-- Add support for trinkets/rings
+- Add support for [trinkets/rings](https://www.curseforge.com/minecraft/mc-mods/trinkets-fabric "Trinkets (fabric)")
 - Add mod menu support
 
 ## License
