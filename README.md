@@ -4,7 +4,7 @@ Adds graves that spawn when you die. They store your items upon death.
 
 ![Showcase Gravestone](https://github.com/Speechrezz/simple-graves-mod/blob/master/images/Showcase.jpg)
 
-## TO-DO
+## To-do:
 - Add nametags above the graves
 - Add support for trinkets/rings
 - Add mod menu support
