@@ -24,16 +24,6 @@ public abstract class LivingEntityMixin extends LivingEntity {
     protected LivingEntityMixin(EntityType<? extends LivingEntity> entityType, World world) {
         super(entityType, world);
     }
-    /**
-    @Inject(at = @At("HEAD"), method = "dropXp")
-    protected void dropXp(CallbackInfo info) {
-        BlockPos blockPos = new BlockPos(this.getPos());
-        PlayerEntity deadGuy = this.world.getClosestPlayer(this,10f);
-
-        System.out.println("DEBUG - Exp: " + deadGuy.totalExperience);
-        ((GravestoneBlockEntity) world.getBlockEntity(blockPos)).setExperience(deadGuy.totalExperience);
-    }
-     **/
     // When player dies and is about to lose his inventory
     @Inject(at = @At("HEAD"), method = "dropInventory")
     protected void dropInventory(CallbackInfo info) {
