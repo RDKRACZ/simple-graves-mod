@@ -26,9 +26,10 @@ public abstract class LivingEntityMixin{
     // When player dies and is about to lose his inventory
     @Inject(method = "drop", at = @At(value = "INVOKE", target = "Lnet/minecraft/entity/LivingEntity;dropInventory()V", shift = At.Shift.BEFORE), cancellable = true)
     private void placeGrave(DamageSource source, CallbackInfo info) {
-        System.out.println("DEBUG - dropInventory() called");
 
         if (((Object) this) instanceof ServerPlayerEntity player) {
+            System.out.println("DEBUG - drop() of player is called");
+
             // Get position of player
             BlockPos blockPos = player.getBlockPos();
             World thisWorld = player.getEntityWorld();
@@ -46,21 +47,19 @@ public abstract class LivingEntityMixin{
                 swapInventory(player, (Inventory) thisWorld.getBlockEntity(blockPos));
 
                 //System.out.println("DEBUG - Gravestone Block Inventory: " + ((Inventory) this.world.getBlockEntity(blockPos)).getStack(0).toString());
+
+                System.out.println("DEBUG - Exp: " + player.totalExperience + ", at blockPos: " + blockPos.toShortString());
+                //BlockPos gravePos = LivingEntityMixin.findBestSpot(player.getEntityWorld(), player.getBlockPos());
+                ((GravestoneBlockEntity) player.getEntityWorld().getBlockEntity(blockPos)).setExperience(player.totalExperience);
+
+                player.setExperienceLevel(0);
+                player.setExperiencePoints(0);
                 player.getInventory().clear();
             }
 
             if (!thisWorld.isClient) {
                 player.sendMessage(new LiteralText("You died at: " + blockPos.toShortString()), false);
             }
-
-            //BlockPos blockPos = new BlockPos(this.getPos());
-
-            System.out.println("DEBUG - Exp: " + player.totalExperience);
-            //BlockPos gravePos = LivingEntityMixin.findBestSpot(player.getEntityWorld(), player.getBlockPos());
-            ((GravestoneBlockEntity) player.getEntityWorld().getBlockEntity(blockPos)).setExperience(player.totalExperience);
-
-            player.setExperienceLevel(0);
-            player.setExperiencePoints(0);
 
         }
     }
@@ -83,7 +82,7 @@ public abstract class LivingEntityMixin{
 
         System.out.println("DEBUG - isAir(): " + world.getBlockState(currentPos).isAir() + ", isInBuildLimit(): " + world.isInBuildLimit(currentPos) + ", getY(): " + currentPos.getY());
         while (!world.getBlockState(currentPos).isAir() && world.isInBuildLimit(currentPos)){
-            System.out.println("DEBUG - isAir(): " + world.getBlockState(currentPos).isAir() + ", isInBuildLimit(): " + world.isInBuildLimit(currentPos) + ", getY(): " + currentPos.getY());
+            //System.out.println("DEBUG - isAir(): " + world.getBlockState(currentPos).isAir() + ", isInBuildLimit(): " + world.isInBuildLimit(currentPos) + ", getY(): " + currentPos.getY());
             currentPos = currentPos.up();
         }
         // If could not find empty space while checking all spaces above
@@ -98,7 +97,7 @@ public abstract class LivingEntityMixin{
             }
 
             while (!world.getBlockState(currentPos).isAir() && world.isInBuildLimit(currentPos)){
-                System.out.println("DEBUG - isAir(): " + world.getBlockState(currentPos).isAir() + ", isInBuildLimit(): " + world.isInBuildLimit(currentPos) + ", getY(): " + currentPos.getY());
+                //System.out.println("DEBUG - isAir(): " + world.getBlockState(currentPos).isAir() + ", isInBuildLimit(): " + world.isInBuildLimit(currentPos) + ", getY(): " + currentPos.getY());
                 currentPos = currentPos.down();
             }
 

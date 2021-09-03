@@ -7,7 +7,10 @@ import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.ItemPlacementContext;
 import net.minecraft.state.property.DirectionProperty;
 import net.minecraft.state.StateManager;
+import net.minecraft.util.ActionResult;
+import net.minecraft.util.Hand;
 import net.minecraft.util.ItemScatterer;
+import net.minecraft.util.hit.BlockHitResult;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Direction;
 import net.minecraft.util.shape.VoxelShape;
@@ -54,7 +57,14 @@ public class GravestoneBlock extends Block implements BlockEntityProvider {
     @Override
     public void onBreak(World world, BlockPos pos, BlockState state, PlayerEntity player) {
         player.addExperience(((GravestoneBlockEntity) world.getBlockEntity(pos)).getExperience());
+        System.out.println("DEBUG - onBreak exp: " + ((GravestoneBlockEntity) world.getBlockEntity(pos)).getExperience() + ", blockPos: " + pos.toShortString());
         super.onBreak(world, pos, state, player);
+    }
+
+    @Override
+    public ActionResult onUse(BlockState state, World world, BlockPos pos, PlayerEntity player, Hand hand, BlockHitResult hit) {
+        System.out.println("DEBUG - onUse exp: " + ((GravestoneBlockEntity) world.getBlockEntity(pos)).getExperience() + ", blockPos: " + pos.toShortString());
+        return super.onUse(state, world, pos, player, hand, hit);
     }
 
     protected void appendProperties(StateManager.Builder<Block, BlockState> builder) {
