@@ -11,6 +11,7 @@ import net.minecraft.util.math.BlockPos;
 public class GravestoneBlockEntity extends BlockEntity implements ImplementedInventory {
 
     private final DefaultedList<ItemStack> inventory = DefaultedList.ofSize(50, ItemStack.EMPTY);
+    private int experience = 0;
 
     public GravestoneBlockEntity(BlockPos pos, BlockState state) {
         super(ModBlocks.GRAVE_BLOCK_ENTITY, pos, state);
@@ -34,5 +35,13 @@ public class GravestoneBlockEntity extends BlockEntity implements ImplementedInv
         super.writeNbt(nbt);
         Inventories.writeNbt(nbt, this.inventory);
         return nbt;
+    }
+
+    public void setExperience(int exp){
+        experience = exp;
+    }
+
+    public int getExperience(){
+        return experience;
     }
 }

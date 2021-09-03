@@ -3,6 +3,7 @@ package com.speechrezz.simple_gravestones.registry;
 import net.minecraft.block.*;
 import net.minecraft.block.entity.BlockEntity;
 import net.minecraft.entity.ai.pathing.NavigationType;
+import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.ItemPlacementContext;
 import net.minecraft.state.property.DirectionProperty;
 import net.minecraft.state.StateManager;
@@ -48,6 +49,12 @@ public class GravestoneBlock extends Block implements BlockEntityProvider {
 
     public BlockState getPlacementState(ItemPlacementContext ctx) {
         return (BlockState)this.getDefaultState().with(FACING, ctx.getPlayerFacing().getOpposite());
+    }
+
+    @Override
+    public void onBreak(World world, BlockPos pos, BlockState state, PlayerEntity player) {
+        player.addExperience(((GravestoneBlockEntity) world.getBlockEntity(pos)).getExperience());
+        super.onBreak(world, pos, state, player);
     }
 
     protected void appendProperties(StateManager.Builder<Block, BlockState> builder) {
