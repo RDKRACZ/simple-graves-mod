@@ -10,7 +10,8 @@
   ],
   "contact": {
     "homepage": "https://soundcloud.com/speechrezz",
-    "sources": "https://github.com/Speechrezz/simple-graves-mod"
+    "sources": "https://github.com/Speechrezz/simple-graves-mod",
+    "issues": "https://github.com/Speechrezz/simple-graves-mod/issues"
   },
 
   "license": "CC0-1.0",
@@ -31,8 +32,5 @@
     "fabric": "*",
     "minecraft": "1.17.x",
     "java": ">=16"
-  },
-  "suggests": {
-    "another-mod": "*"
   }
 }
