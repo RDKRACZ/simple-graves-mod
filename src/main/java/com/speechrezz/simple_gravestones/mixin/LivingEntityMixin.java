@@ -1,14 +1,16 @@
 package com.speechrezz.simple_gravestones.mixin;
 
 import com.speechrezz.simple_gravestones.registry.GravestoneBlock;
+import com.speechrezz.simple_gravestones.registry.GravestoneBlockEntity;
 import com.speechrezz.simple_gravestones.registry.ModBlocks;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
-import net.minecraft.entity.EntityType;
 import net.minecraft.entity.LivingEntity;
+import net.minecraft.entity.damage.DamageSource;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.inventory.Inventory;
+import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.text.LiteralText;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.GameRules;
@@ -18,42 +20,48 @@ import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
-@Mixin(PlayerEntity.class)
-public abstract class LivingEntityMixin extends LivingEntity {
+@Mixin(LivingEntity.class)
+public abstract class LivingEntityMixin{
 
-    protected LivingEntityMixin(EntityType<? extends LivingEntity> entityType, World world) {
-        super(entityType, world);
-    }
     // When player dies and is about to lose his inventory
-    @Inject(at = @At("HEAD"), method = "dropInventory")
-    protected void dropInventory(CallbackInfo info) {
-        System.out.println("DEBUG - dropInventory() called");
+    @Inject(method = "drop", at = @At(value = "INVOKE", target = "Lnet/minecraft/entity/LivingEntity;dropInventory()V", shift = At.Shift.BEFORE), cancellable = true)
+    private void placeGrave(DamageSource source, CallbackInfo info) {
 
-        // Get position of player
-        BlockPos blockPos = new BlockPos(this.getPos());
+        if (((Object) this) instanceof ServerPlayerEntity player) {
+            System.out.println("DEBUG - drop() of player is called");
 
-        // Get the PlayerEntity of the player who just died
-        PlayerEntity deadGuy = this.world.getClosestPlayer(this,10f);
-        // Get BlockState of a grave block
-        BlockState blockState = ModBlocks.GRAVE_BLOCK.getDefaultState().with(GravestoneBlock.FACING, deadGuy.getHorizontalFacing().getOpposite());
+            // Get position of player
+            World thisWorld = player.getEntityWorld();
+            BlockPos blockPos = player.getBlockPos();
 
-        //System.out.println("DEBUG - Player Slot 0: " + deadGuy.getInventory().getStack(0).toString());
+            if (!thisWorld.getGameRules().getBoolean(GameRules.KEEP_INVENTORY)) {
+                // Get BlockState of a grave block
+                BlockState blockState = (BlockState)ModBlocks.GRAVE_BLOCK.getDefaultState()
+                        .with(GravestoneBlock.FACING, player.getHorizontalFacing().getOpposite());
+                        //.with(GravestoneBlock.EXPERIENCE, (Integer)player.totalExperience);
 
-        if (deadGuy != null) {
-            if (!this.world.getGameRules().getBoolean(GameRules.KEEP_INVENTORY)) {
-                blockPos = findBestSpot(this.world, blockPos);
-                blockPos = addDirtBlock(this.world, blockPos);
+                //System.out.println("DEBUG - Player Slot 0: " + deadGuy.getInventory().getStack(0).toString());
 
-                this.world.setBlockState(blockPos, blockState, Block.NOTIFY_ALL);
-                swapInventory(deadGuy, (Inventory) world.getBlockEntity(blockPos));
+                blockPos = findBestSpot(thisWorld, blockPos);
+                blockPos = addDirtBlock(thisWorld, blockPos);
+
+                thisWorld.setBlockState(blockPos, blockState, Block.NOTIFY_ALL);
+                swapInventory(player, (Inventory) thisWorld.getBlockEntity(blockPos));
 
                 //System.out.println("DEBUG - Gravestone Block Inventory: " + ((Inventory) this.world.getBlockEntity(blockPos)).getStack(0).toString());
-                deadGuy.getInventory().clear();
+
+                System.out.println("DEBUG - Exp: " + player.totalExperience + ", at blockPos: " + blockPos.toShortString());
+                ((GravestoneBlockEntity) player.getEntityWorld().getBlockEntity(blockPos)).setExperience(player.totalExperience);
+
+                player.setExperienceLevel(0);
+                player.setExperiencePoints(0);
+                player.getInventory().clear();
             }
 
-            if (!this.world.isClient) {
-                deadGuy.sendMessage(new LiteralText("You died at: " + blockPos.toShortString()), false);
+            if (!thisWorld.isClient) {
+                player.sendMessage(new LiteralText("You died at: " + blockPos.toShortString()), false);
             }
+
         }
     }
 
@@ -64,7 +72,7 @@ public abstract class LivingEntityMixin extends LivingEntity {
         }
     }
 
-    private BlockPos findBestSpot(World world, BlockPos currentPos){
+    public BlockPos findBestSpot(World world, BlockPos currentPos){
         System.out.println("DEBUG - Bottom Y: " + world.getBottomY() + ", Top Y: " + world.getTopY());
 
         BlockPos initialPos = currentPos;
@@ -75,7 +83,7 @@ public abstract class LivingEntityMixin extends LivingEntity {
 
         System.out.println("DEBUG - isAir(): " + world.getBlockState(currentPos).isAir() + ", isInBuildLimit(): " + world.isInBuildLimit(currentPos) + ", getY(): " + currentPos.getY());
         while (!world.getBlockState(currentPos).isAir() && world.isInBuildLimit(currentPos)){
-            System.out.println("DEBUG - isAir(): " + world.getBlockState(currentPos).isAir() + ", isInBuildLimit(): " + world.isInBuildLimit(currentPos) + ", getY(): " + currentPos.getY());
+            //System.out.println("DEBUG - isAir(): " + world.getBlockState(currentPos).isAir() + ", isInBuildLimit(): " + world.isInBuildLimit(currentPos) + ", getY(): " + currentPos.getY());
             currentPos = currentPos.up();
         }
         // If could not find empty space while checking all spaces above
@@ -90,7 +98,7 @@ public abstract class LivingEntityMixin extends LivingEntity {
             }
 
             while (!world.getBlockState(currentPos).isAir() && world.isInBuildLimit(currentPos)){
-                System.out.println("DEBUG - isAir(): " + world.getBlockState(currentPos).isAir() + ", isInBuildLimit(): " + world.isInBuildLimit(currentPos) + ", getY(): " + currentPos.getY());
+                //System.out.println("DEBUG - isAir(): " + world.getBlockState(currentPos).isAir() + ", isInBuildLimit(): " + world.isInBuildLimit(currentPos) + ", getY(): " + currentPos.getY());
                 currentPos = currentPos.down();
             }
 

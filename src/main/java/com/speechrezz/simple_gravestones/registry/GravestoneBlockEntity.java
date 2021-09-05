@@ -28,20 +28,23 @@ public class GravestoneBlockEntity extends BlockEntity implements ImplementedInv
     public void readNbt(NbtCompound nbt) {
         super.readNbt(nbt);
         Inventories.readNbt(nbt, this.inventory);
+        this.experience = nbt.getInt("Experience");
     }
 
     @Override
     public NbtCompound writeNbt(NbtCompound nbt) {
         super.writeNbt(nbt);
         Inventories.writeNbt(nbt, this.inventory);
+        nbt.putInt("Experience", this.experience);
         return nbt;
     }
 
     public void setExperience(int exp){
-        experience = exp;
+        this.experience = exp;
+        //System.out.println("DEBUG - GravestoneBlockEntity's Exp: "+ experience);
     }
 
     public int getExperience(){
-        return experience;
+        return this.experience;
     }
 }
