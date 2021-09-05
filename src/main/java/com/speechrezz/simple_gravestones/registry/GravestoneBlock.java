@@ -7,7 +7,6 @@ import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.ItemPlacementContext;
 import net.minecraft.state.property.DirectionProperty;
 import net.minecraft.state.StateManager;
-import net.minecraft.state.property.IntProperty;
 import net.minecraft.util.ActionResult;
 import net.minecraft.util.Hand;
 import net.minecraft.util.ItemScatterer;
@@ -22,7 +21,6 @@ import org.jetbrains.annotations.Nullable;
 public class GravestoneBlock extends Block implements BlockEntityProvider {
 
     public static final DirectionProperty FACING; // = DirectionProperty.of("gravestone_block", Direction.SOUTH);
-    public static final IntProperty EXPERIENCE;
 
     //public static final BooleanProperty WATERLOGGED;
     protected static final VoxelShape GRAVE_SHAPE_NORTH;
@@ -32,7 +30,7 @@ public class GravestoneBlock extends Block implements BlockEntityProvider {
 
     protected GravestoneBlock(Settings settings) {
         super(settings);
-        this.setDefaultState((BlockState)((BlockState)((BlockState)this.stateManager.getDefaultState()).with(FACING, Direction.SOUTH)).with(EXPERIENCE, 0));
+        this.setDefaultState((BlockState)((BlockState)this.stateManager.getDefaultState()).with(FACING, Direction.SOUTH));
     }
 
     public VoxelShape getOutlineShape(BlockState state, BlockView view, BlockPos pos, ShapeContext context) {
@@ -58,9 +56,8 @@ public class GravestoneBlock extends Block implements BlockEntityProvider {
 
     @Override
     public void onBreak(World world, BlockPos pos, BlockState state, PlayerEntity player) {
-        player.addExperience((Integer)state.get(EXPERIENCE));
-        //player.addExperience(((GravestoneBlockEntity) world.getBlockEntity(pos)).getExperience());
-        System.out.println("DEBUG - onBreak exp: " + (int)state.get(EXPERIENCE) + ", blockPos: " + pos.toShortString());
+        player.addExperience(((GravestoneBlockEntity) world.getBlockEntity(pos)).getExperience());
+        System.out.println("DEBUG - onBreak exp: " + ((GravestoneBlockEntity)world.getBlockEntity(pos)).getExperience() + ", blockPos: " + pos.toShortString());
         super.onBreak(world, pos, state, player);
     }
 
@@ -71,7 +68,7 @@ public class GravestoneBlock extends Block implements BlockEntityProvider {
     }
 
     protected void appendProperties(StateManager.Builder<Block, BlockState> builder) {
-        builder.add(FACING).add(EXPERIENCE);
+        builder.add(FACING);
     }
 
     static {
@@ -83,8 +80,6 @@ public class GravestoneBlock extends Block implements BlockEntityProvider {
         GRAVE_SHAPE_WEST = Block.createCuboidShape(12.0D, 0.0D, 1.0D, 14.0D, 16.0D, 15.0D);
 
         FACING = HorizontalFacingBlock.FACING;
-
-        EXPERIENCE = IntProperty.of("experience",0,999);
 
     }
 

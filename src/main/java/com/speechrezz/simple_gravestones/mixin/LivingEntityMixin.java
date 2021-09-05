@@ -36,9 +36,9 @@ public abstract class LivingEntityMixin{
 
             if (!thisWorld.getGameRules().getBoolean(GameRules.KEEP_INVENTORY)) {
                 // Get BlockState of a grave block
-                BlockState blockState = (BlockState)((BlockState)ModBlocks.GRAVE_BLOCK.getDefaultState()
-                        .with(GravestoneBlock.FACING, player.getHorizontalFacing().getOpposite()))
-                        .with(GravestoneBlock.EXPERIENCE, (Integer)player.totalExperience);
+                BlockState blockState = (BlockState)ModBlocks.GRAVE_BLOCK.getDefaultState()
+                        .with(GravestoneBlock.FACING, player.getHorizontalFacing().getOpposite());
+                        //.with(GravestoneBlock.EXPERIENCE, (Integer)player.totalExperience);
 
                 //System.out.println("DEBUG - Player Slot 0: " + deadGuy.getInventory().getStack(0).toString());
 
@@ -50,9 +50,8 @@ public abstract class LivingEntityMixin{
 
                 //System.out.println("DEBUG - Gravestone Block Inventory: " + ((Inventory) this.world.getBlockEntity(blockPos)).getStack(0).toString());
 
-                //System.out.println("DEBUG - Exp: " + player.totalExperience + ", at blockPos: " + blockPos.toShortString());
-                //BlockPos gravePos = LivingEntityMixin.findBestSpot(player.getEntityWorld(), player.getBlockPos());
-                //((GravestoneBlockEntity) player.getEntityWorld().getBlockEntity(blockPos)).setExperience(player.totalExperience);
+                System.out.println("DEBUG - Exp: " + player.totalExperience + ", at blockPos: " + blockPos.toShortString());
+                ((GravestoneBlockEntity) player.getEntityWorld().getBlockEntity(blockPos)).setExperience(player.totalExperience);
 
                 player.setExperienceLevel(0);
                 player.setExperiencePoints(0);
