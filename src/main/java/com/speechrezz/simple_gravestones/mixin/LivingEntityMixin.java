@@ -31,15 +31,17 @@ public abstract class LivingEntityMixin{
             System.out.println("DEBUG - drop() of player is called");
 
             // Get position of player
-            BlockPos blockPos = player.getBlockPos();
             World thisWorld = player.getEntityWorld();
-
-            // Get BlockState of a grave block
-            BlockState blockState = ModBlocks.GRAVE_BLOCK.getDefaultState().with(GravestoneBlock.FACING, player.getHorizontalFacing().getOpposite());
-
-            //System.out.println("DEBUG - Player Slot 0: " + deadGuy.getInventory().getStack(0).toString());
+            BlockPos blockPos = player.getBlockPos();
 
             if (!thisWorld.getGameRules().getBoolean(GameRules.KEEP_INVENTORY)) {
+                // Get BlockState of a grave block
+                BlockState blockState = (BlockState)((BlockState)ModBlocks.GRAVE_BLOCK.getDefaultState()
+                        .with(GravestoneBlock.FACING, player.getHorizontalFacing().getOpposite()))
+                        .with(GravestoneBlock.EXPERIENCE, (Integer)player.totalExperience);
+
+                //System.out.println("DEBUG - Player Slot 0: " + deadGuy.getInventory().getStack(0).toString());
+
                 blockPos = findBestSpot(thisWorld, blockPos);
                 blockPos = addDirtBlock(thisWorld, blockPos);
 
@@ -48,9 +50,9 @@ public abstract class LivingEntityMixin{
 
                 //System.out.println("DEBUG - Gravestone Block Inventory: " + ((Inventory) this.world.getBlockEntity(blockPos)).getStack(0).toString());
 
-                System.out.println("DEBUG - Exp: " + player.totalExperience + ", at blockPos: " + blockPos.toShortString());
+                //System.out.println("DEBUG - Exp: " + player.totalExperience + ", at blockPos: " + blockPos.toShortString());
                 //BlockPos gravePos = LivingEntityMixin.findBestSpot(player.getEntityWorld(), player.getBlockPos());
-                ((GravestoneBlockEntity) player.getEntityWorld().getBlockEntity(blockPos)).setExperience(player.totalExperience);
+                //((GravestoneBlockEntity) player.getEntityWorld().getBlockEntity(blockPos)).setExperience(player.totalExperience);
 
                 player.setExperienceLevel(0);
                 player.setExperiencePoints(0);

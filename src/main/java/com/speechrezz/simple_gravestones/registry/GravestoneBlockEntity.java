@@ -39,7 +39,7 @@ public class GravestoneBlockEntity extends BlockEntity implements ImplementedInv
 
     public void setExperience(int exp){
         experience = exp;
-        System.out.println("DEBUG - GravestoneBlockEntity's Exp: "+ experience);
+        //System.out.println("DEBUG - GravestoneBlockEntity's Exp: "+ experience);
     }
 
     public int getExperience(){
