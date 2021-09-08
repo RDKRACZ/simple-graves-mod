@@ -20,6 +20,9 @@ import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
+import java.util.ArrayList;
+import java.util.List;
+
 @Mixin(LivingEntity.class)
 public abstract class LivingEntityMixin{
 
@@ -51,7 +54,10 @@ public abstract class LivingEntityMixin{
                 //System.out.println("DEBUG - Gravestone Block Inventory: " + ((Inventory) this.world.getBlockEntity(blockPos)).getStack(0).toString());
 
                 System.out.println("DEBUG - Exp: " + player.totalExperience + ", at blockPos: " + blockPos.toShortString());
-                ((GravestoneBlockEntity) player.getEntityWorld().getBlockEntity(blockPos)).setExperience(player.totalExperience);
+
+                GravestoneBlockEntity graveEntity = (GravestoneBlockEntity) player.getEntityWorld().getBlockEntity(blockPos);
+                graveEntity.setExperience(player.totalExperience);
+                graveEntity.setPlayerName(player.getName().asString());
 
                 player.setExperienceLevel(0);
                 player.setExperiencePoints(0);
@@ -81,8 +87,8 @@ public abstract class LivingEntityMixin{
             currentPos = currentPos.withY(world.getBottomY() + 1);
         }
 
-        System.out.println("DEBUG - isAir(): " + world.getBlockState(currentPos).isAir() + ", isInBuildLimit(): " + world.isInBuildLimit(currentPos) + ", getY(): " + currentPos.getY());
-        while (!world.getBlockState(currentPos).isAir() && world.isInBuildLimit(currentPos)){
+        System.out.println("DEBUG - isValid(): " + isValid(world.getBlockState(currentPos)) + ", isInBuildLimit(): " + world.isInBuildLimit(currentPos) + ", getY(): " + currentPos.getY());
+        while (!isValid(world.getBlockState(currentPos)) && world.isInBuildLimit(currentPos)){
             //System.out.println("DEBUG - isAir(): " + world.getBlockState(currentPos).isAir() + ", isInBuildLimit(): " + world.isInBuildLimit(currentPos) + ", getY(): " + currentPos.getY());
             currentPos = currentPos.up();
         }
@@ -97,7 +103,7 @@ public abstract class LivingEntityMixin{
                 currentPos = currentPos.withY(world.getTopY() - 1);
             }
 
-            while (!world.getBlockState(currentPos).isAir() && world.isInBuildLimit(currentPos)){
+            while (!isValid(world.getBlockState(currentPos)) && world.isInBuildLimit(currentPos)){
                 //System.out.println("DEBUG - isAir(): " + world.getBlockState(currentPos).isAir() + ", isInBuildLimit(): " + world.isInBuildLimit(currentPos) + ", getY(): " + currentPos.getY());
                 currentPos = currentPos.down();
             }
@@ -120,7 +126,7 @@ public abstract class LivingEntityMixin{
         BlockPos blockPosBelow = currentPos.down();
         BlockState blockStateBelow = world.getBlockState(blockPosBelow);
 
-        if (blockStateBelow.isAir()) {
+        if (isValid(blockStateBelow)) {
             world.setBlockState(blockPosBelow, Blocks.DIRT.getDefaultState(), Block.NOTIFY_ALL);
         }
         /**
@@ -130,6 +136,18 @@ public abstract class LivingEntityMixin{
         } **/
 
         return currentPos;
+    }
+
+    private boolean isValid(BlockState blockState){
+        List<BlockState> blockList = new ArrayList<BlockState>();
+        blockList.add(Blocks.AIR.getDefaultState());
+        blockList.add(Blocks.GRASS.getDefaultState());
+        blockList.add(Blocks.SNOW.getDefaultState());
+
+        if (blockList.contains(blockState)){
+            return true;
+        }
+        return false;
     }
 
     private boolean isWithinWorldLimit(World world, BlockPos currentPos){
