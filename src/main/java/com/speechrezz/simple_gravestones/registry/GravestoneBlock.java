@@ -63,7 +63,7 @@ public class GravestoneBlock extends Block implements BlockEntityProvider {
 
     @Override
     public ActionResult onUse(BlockState state, World world, BlockPos pos, PlayerEntity player, Hand hand, BlockHitResult hit) {
-        //System.out.println("DEBUG - onUse exp: " + ((GravestoneBlockEntity) world.getBlockEntity(pos)).getExperience() + ", blockPos: " + pos.toShortString());
+        System.out.println("DEBUG - onUse exp: " + ((GravestoneBlockEntity) world.getBlockEntity(pos)).getExperience() + ", playerName: " + ((GravestoneBlockEntity) world.getBlockEntity(pos)).getPlayerName() + ", blockPos: " + pos.toShortString());
         return super.onUse(state, world, pos, player, hand, hit);
     }
 

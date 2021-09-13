@@ -4,8 +4,6 @@
   "package": "com.speechrezz.simple_gravestones.mixin",
   "compatibilityLevel": "JAVA_16",
   "mixins": [
-  ],
-  "client": [
     "LivingEntityMixin"
   ],
   "injectors": {
